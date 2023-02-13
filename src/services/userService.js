@@ -21,13 +21,13 @@ let handleUserLogin = (email,password)=>{
                     
                     if(check){
                         userData.errCode=0;
-                        userData.errMessage='Ok';
+                        // userData.errMessage='Ok';
                         delete user.password;
                         userData.user=user;
                     }
                     else{
                         userData.errCode=3;
-                        userData.errMessage='Ok';
+                        userData.errMessage='Wrong password';
                     }
                 }
                 else{

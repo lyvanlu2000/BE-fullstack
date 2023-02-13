@@ -6,7 +6,7 @@ let handleLogin = async(req,res)=>{
 
     if(!email || !password ){
         return res.status(500).json({
-            arrCode: 1,
+            errCode: 1,
             message:'Miss input parameter'
         })
     }
@@ -15,7 +15,7 @@ let handleLogin = async(req,res)=>{
 
 
     return res.status(200).json({
-        arrCode: userData.errCode,
+        errCode: userData.errCode,
         message:userData.errMessage,
         user:userData.user ? userData.user:{}
     })
