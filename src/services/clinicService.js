@@ -1,9 +1,9 @@
 const db = require("../models")
 
-let createSpecialty=(data)=>{
+let createClinic = (data)=>{
     return new Promise(async(resolve,reject)=>{
         try{
-            if(!data.name 
+            if(!data.name ||!data.address
                 || !data.imageBase64 
                 ||!data.descriptionMarkdown 
                 || !data.descriptionHTML){
@@ -12,8 +12,9 @@ let createSpecialty=(data)=>{
                     errMessage:'missing parameter'
                 })
             }else{
-                await db.Specialty.create({
+                await db.Clinic.create({
                     name:data.name,
+                    address:data.address,
                     image:data.imageBase64,
                     descriptionHTML:data.descriptionHTML,
                     descriptionMarkdown:data.descriptionMarkdown
@@ -31,10 +32,10 @@ let createSpecialty=(data)=>{
     })
 }
 
-let getAllSpecialty=()=>{
+let getAllClinic=()=>{
     return new Promise(async(resolve,reject)=>{
         try{
-            let data=await db.Specialty.findAll();
+            let data=await db.Clinic.findAll();
             if(data && data.length>0){
                 data.map(item=>{
                     item.image= new Buffer(item.image,'base64').toString('binary');
@@ -54,21 +55,22 @@ let getAllSpecialty=()=>{
     })
 }
 
-let getDetailSpecialtyById=(inputId,location)=>{
+let getDetailClinicById=(inputId)=>{
     return new Promise(async(resolve,reject)=>{
         try{
-            if(!inputId || !location){
+            if(!inputId){
                 resolve({
                     errCode:1,
                     errMessage:'missing parameter'
                 })
             }
             else{
-                    let data=await db.Specialty.findOne({
+                    let data=await db.Clinic.findOne({
                         where:{
                             id:inputId
                         },
-                        attributes:['descriptionHTML','descriptionMarkdown','image']
+                        attributes:['name','address','descriptionHTML','descriptionMarkdown','image'],
+                        
                     })
 
                     if(data && data.image){
@@ -76,30 +78,19 @@ let getDetailSpecialtyById=(inputId,location)=>{
                      }
 
                     if(data){
-                        let doctorSpecialty=[];
-                        if(location ==='ALL'){
-                            doctorSpecialty=await db.Doctor_Infor.findAll({
-                                where:{specialtyId:inputId},
+                        let doctorClinic=[];
+                        doctorClinic=await db.Doctor_Infor.findAll({
+                                where:{clinicId:inputId},
                                 attributes:[
-                                    'doctorId','provincedId'
+                                    'doctorId'
                                 ]
                             })
-                        } else {
-                            //find by location
-                            doctorSpecialty=await db.Doctor_Infor.findAll({
-                                where:{
-                                    specialtyId:inputId,
-                                    provincedId:location
-                                },
-                                attributes:[
-                                    'doctorId','provincedId'
-                                ]
-                            })
-                        }
-                            
-                        data.doctorSpecialty=doctorSpecialty;
+                           
+                        data.doctorClinic=doctorClinic;
     
-                    } else data={}
+                    } 
+                    
+                    else data={}
                     resolve({
                         errCode:0,
                         errMessage:'ok',
@@ -114,7 +105,7 @@ let getDetailSpecialtyById=(inputId,location)=>{
 }
 
 module.exports={
-    createSpecialty:createSpecialty,
-    getAllSpecialty:getAllSpecialty,
-    getDetailSpecialtyById:getDetailSpecialtyById
+    createClinic:createClinic,
+    getAllClinic:getAllClinic,
+    getDetailClinicById:getDetailClinicById
 }
